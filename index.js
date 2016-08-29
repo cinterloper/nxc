@@ -78,10 +78,3 @@ function onerrorEventBus(error) {
 
 eb.onerror = onerrorEventBus;
 
-function kvdnGet() {
-             var request = require("request");
-            console.log("http://localhost:6500/X/this/that/"+m);
-            request("http://localhost:6500/X/this/that/"+m, function(error, response, body) {
-                console.log(body);
-            });
-}
