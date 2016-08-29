@@ -1,6 +1,6 @@
-nodejs index.js --help
+nodejs nxc.js --help
 
-  Usage: index [options]
+  Usage: nxc [options]
 
   Options:
 
