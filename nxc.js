@@ -1,3 +1,4 @@
+#!/usr/bin/env nodejs
 var EventBus = require('vertx3-eventbus-client');
 var program = require('commander');
 var encoding = 'utf-8';
