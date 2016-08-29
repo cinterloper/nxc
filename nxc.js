@@ -12,17 +12,12 @@ program
 	.option('-p, --publish ', 		'publish')
 	.parse(process.argv);
 
-
-
 if(process.env.CHANLIST)
 {
   program.chanlist=process.env.CHANLIST
 }
 if(!program.connect)
   program.connect='http://localhost:6500/eb/';
-
-
-data = '';
 
 
 var eb = new EventBus(program.connect);
@@ -32,13 +27,6 @@ function send(msg){
   else
     eb.send(program.channel,msg)
 }
-
-
-
-
-
-
-
 
 eb.onopen=function(){
   if(!process.stdin.isTTY) {
@@ -56,19 +44,13 @@ eb.onopen=function(){
   });
 }
 
-
   if(program.listen){
     eb.registerHandler(program.channel, function (e, mes) {
-
         if (e) console.error(e);
         else {
-
             var m = mes.body;
-
             console.log(m);
-
         }
-
     });
   }
 };
@@ -78,4 +60,3 @@ function onerrorEventBus(error) {
 }
 
 eb.onerror = onerrorEventBus;
-
