@@ -3,12 +3,13 @@ var EventBus = require('vertx3-eventbus-client');
 var program = require('commander');
 var encoding = 'utf-8';
 var data;
-
+var eb;
 program
     .version('0.0.1')
     .option('-c, --connect <value>', 'connect to host:port')
     .option('-n, --channel <value>', 'connect channel name')
     .option('-l, --listen ', 'listen')
+    .option('-d, --debug ', 'debug')
     .option('-p, --publish ', 'publish')
     .parse(process.argv);
 
@@ -19,7 +20,7 @@ if (!program.connect)
     try {
         program.connect = 'http://localhost:6500/eb/';
     } catch (e) {
-        console.log('error?')
+        _debug('error?')
         onerrorEventBus(e)
     }
 
@@ -37,18 +38,34 @@ function onerrorEventBus(error) {
 
 
 var request = require('request');
-request(program.connect, function (error, response, body) {
+_debug("connect: " + program.connect)
+var ropts= {
+  followRedirect: false
+}
+
+request.get(program.connect, ropts, function (error, response, body) {
+    _debug("inital resp " + JSON.stringify(response,null,4))
     if (error) {
+        console.log("error " + JSON.stringify(error))
         console.log(body);
         process.exit(-1)
     }
-    if (response.statusCode < 400 && response.statusCode > 299) {
-        program.connect = response.header['Location'];
+    _debug("status:" + response.statusCode)
+    if (response.statusCode == 302  ) {
+        program.connect = response.headers['location'];
+        _debug("redirecting " + program.connect)
         response.statusCode = 299
     }
-    var eb = new EventBus(program.connect);
+    runEBConn(program.connect);
+})
+
+function runEBConn(connect)
+{
+    _debug("enter runEBConn")
+    eb = new EventBus(connect);
 
     eb.onopen = function () {
+    _debug("eb open")
         if (!process.stdin.isTTY) {
             eb.onerror = onerrorEventBus;
 
@@ -66,19 +83,22 @@ request(program.connect, function (error, response, body) {
         }
 
         if (program.listen) {
+            _debug("registering " + program.listen)
             eb.registerHandler(program.channel, function (e, mes) {
                 if (e) console.error(e);
                 else {
                     var m = mes.body;
-                    console.log(m);
+                    console.log(JSON.stringify(m));
                 }
             });
         }
     };
 
-})
 
 
-
-
-
+}
+function _debug(msg){
+  if (program.debug){
+    console.log(msg)
+  }
+}
