@@ -5,7 +5,7 @@ var encoding = 'utf-8';
 var data;
 var eb;
 program
-    .version('0.0.1')
+    .version('0.5')
     .option('-c, --connect <value>', 'connect to host:port')
     .option('-n, --channel <value>', 'connect channel name')
     .option('-l, --listen ', 'listen')
