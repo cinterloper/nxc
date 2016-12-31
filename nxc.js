@@ -2,12 +2,15 @@
 var EventBus = require('vertx3-eventbus-client');
 var program = require('commander');
 var encoding = 'utf-8';
+var fs = require('fs');
 var data;
 var eb;
 program
     .version('0.0.1')
     .option('-c, --connect <value>', 'connect to host:port')
     .option('-n, --channel <value>', 'connect channel name')
+    .option('-C, --ca <value>', 'ca certificate')
+    .option('-R, --cert <value>', 'client certificate')
     .option('-l, --listen ', 'listen')
     .option('-d, --debug ', 'debug')
     .option('-p, --publish ', 'publish')
@@ -40,8 +43,24 @@ function onerrorEventBus(error) {
 var request = require('request');
 _debug("connect: " + program.connect)
 var ropts= {
-  followRedirect: false
+  followRedirect: false,
+  agentOptions: {  }
 }
+_debug("full config: " + JSON.stringify(program,null,4))
+var _props = ["ca","cert","key"];
+var _a = {}
+for (var p in _props) {
+  _debug("examining " + p)
+  if ( program[_props[p]] != null) {
+    _debug("loading cert prop " + p)
+    _a[_props[p]]=program[_props[p]]
+  }
+}
+if (_a != {}){
+  ropts.agentOptions = _a
+  _debug("going with opts: " + JSON.stringify(ropts,null,4))
+}else
+  delete ropts['agentOptions']
 
 request.get(program.connect, ropts, function (error, response, body) {
     _debug("inital resp " + JSON.stringify(response,null,4))
