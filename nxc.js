@@ -6,7 +6,7 @@ var fs = require('fs');
 var data;
 var eb;
 program
-    .version('0.0.1')
+    .version('0.5')
     .option('-c, --connect <value>', 'connect to host:port')
     .option('-n, --channel <value>', 'connect channel name')
     .option('-C, --ca <value>', 'ca certificate')
